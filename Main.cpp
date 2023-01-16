@@ -26,7 +26,7 @@ int main()
 	creator.FeedFrame(nullptr, testImg.cols, testImg.rows, padded.cols * 3, &error);
 	creator.FeedFrame(0, testImg.cols, testImg.rows, padded.cols * 3, &error);
 	creator.FeedFrame(padded.data, 0, 0, padded.cols * 3, &error);
-	creator.FeedFrame(padded.data, padded.cols, padded.rows, padded.cols, &error);
+	creator.FeedFrame(padded.data, testImg.cols, testImg.rows, padded.cols, &error);
 
 	//Корректный вызов
 	creator.FeedFrame(padded.data, testImg.cols, testImg.rows, padded.cols * 3, &error);
