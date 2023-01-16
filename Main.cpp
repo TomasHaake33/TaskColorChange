@@ -29,7 +29,7 @@ int main()
 	creator.FeedFrame(padded.data, padded.cols, padded.rows, padded.cols, &error);
 
 	//Корректный вызов
-	creator.FeedFrame(padded.data, padded.cols, padded.rows, padded.cols * 3, &error);
+	creator.FeedFrame(padded.data, testImg.cols, testImg.rows, padded.cols * 3, &error);
 
 	//Эта конвертация нужна только для отображения
 	cv::cvtColor(padded, padded, cv::COLOR_RGB2BGR);
