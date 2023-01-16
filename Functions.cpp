@@ -35,7 +35,7 @@ void MyCreator::FeedFrame(unsigned char* packedRGBData, size_t width, size_t hei
     cv::inRange(img, cv::Scalar(30, 30, 30), cv::Scalar(80, 255, 255), mask);
 
     //Паддинг с правой стороны
-    size_t padding = strideInBytes / 3 - width;
+    auto padding = strideInBytes / 3 - width;
 
     //Если пиксель на маске белый, меняю G и R компоненты оригинала в этом месте
     for (size_t i = 0; i < height; ++i)
