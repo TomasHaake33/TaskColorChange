@@ -92,7 +92,7 @@ int main(int argc, char** argv)
 	}
 
 	auto ChangeColorEngine = std::make_unique<ChangeColor>();
-	itvcvError error; //В этой и некст строчке лучше через указатель? 
+	itvcvError error;
 	size_t counter = 0;
 	for (auto& img : images)
 	{
