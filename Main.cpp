@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 	{
 		for (size_t i = 0; i < count; ++i)
 		{
-			images.push_back(cv::imread(fn[i]));
+			images.emplace_back(cv::imread(fn[i]));
 		}
 	}
 	catch (std::exception& e)
