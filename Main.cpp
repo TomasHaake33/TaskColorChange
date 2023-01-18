@@ -4,6 +4,7 @@ namespace po = boost::program_options;
 
 int main(int argc, char** argv)
 {
+	//Парсинг командной строки
 	po::options_description desc("Description: \n Replace green with red in .jpg image ");
 	desc.add_options()
 		("help,h", "help")
@@ -29,7 +30,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 	
-
+	//Определение путей к папкам для чтения и сохранения
 	std::string inpath;
 	std::string outpath;
 	if (!vm.count("inpath"))
@@ -53,12 +54,7 @@ int main(int argc, char** argv)
 		outpath = vm["outpath"].as<std::string>();
 	}
 
-
-
-	std::vector<cv::String> fn;
-	/*Есть идея замутить константу со всеми форматами, которые буду искать.
-	Пока не трачу время. Тем более тогда надо будет запускать цикл по всем этим форматам,
-	делать для каждого отдельные векторы и потом их слить. Короче отдельная функция*/
+	std::vector<std::string> fn;
 	try
 	{
 		cv::glob(inpath + "/*.jpg", fn, false);
@@ -75,11 +71,11 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
+	//Вектор изображений, находящихся в папке
 	std::vector<cv::Mat> images;
-	size_t count = fn.size();
 	try
 	{
-		for (size_t i = 0; i < count; ++i)
+		for (size_t i = 0; i < fn.size(); ++i)
 		{
 			images.emplace_back(cv::imread(fn[i]));
 		}
@@ -91,30 +87,29 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
+	//Изменение зеленого на красный и сохранение изображения в outpath
 	auto ChangeColorEngine = std::make_unique<ChangeColor>();
 	itvcvError error;
-	size_t counter = 0;
-	for (auto& img : images)
+	for (size_t i = 0; i < images.size(); ++i)
 	{
-		++counter;
-
+		cv::Mat& img = images[i];
 		cv::cvtColor(img, img, cv::COLOR_BGR2RGB);
 		ChangeColorEngine->FeedFrame(img.data, img.cols, img.rows, img.cols * 3, &error);
 		if (error != itvcvError::SUCCESS)
 		{
-			std::cout << "Error in FeedFrame with image " << counter
+			std::cout << "Error in FeedFrame with image " << i
 				<< " , code" << (int)error;
 			continue;
 		}
 		try
 		{
 			cv::cvtColor(img, img, cv::COLOR_RGB2BGR);
-			cv::imwrite(outpath + "/" + std::to_string(counter) + ".jpeg", img, {cv::IMWRITE_JPEG_QUALITY, 100});
+			cv::imwrite(outpath + "/" + std::to_string(i) + ".jpeg", img, {cv::IMWRITE_JPEG_QUALITY, 100});
 		}
 		catch (std::exception& e)
 		{
 			std::cout << e.what() << std::endl;
-			std::cout << "Error writing image " << counter << std::endl;
+			std::cout << "Error writing image " << i << std::endl;
 			continue;
 		}
 	}
