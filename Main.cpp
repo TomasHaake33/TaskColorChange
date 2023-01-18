@@ -1,10 +1,10 @@
-﻿#include "ChangeColor.h"
+#include "ChangeColor.h"
 
 namespace po = boost::program_options;
 
 int main(int argc, char** argv)
 {
-	po::options_description desc("Description");
+	po::options_description desc("Description: \n Replace green with red in .jpg image ");
 	desc.add_options()
 		("help,h", "help")
 		("inpath,i", po::value<std::string>(), "Input images folder path")
@@ -22,6 +22,12 @@ int main(int argc, char** argv)
 		std::cout << desc << std::endl;
 		return 1;
 	}
+
+	if (vm.count("help"))
+	{
+		std::cout << desc << std::endl;
+		return 0;
+	}
 	
 
 	std::string inpath;
@@ -38,9 +44,9 @@ int main(int argc, char** argv)
 
 	if (!vm.count("outpath"))
 	{
-		std::cout << "No outpath is specified. Using default path " << DEFAULT_INPATH + "/output"
+		std::cout << "No outpath is specified. Using default path " << inpath + "\\output"
 			<< std::endl;
-		outpath = DEFAULT_INPATH + "/output";
+		outpath = inpath + "/output";
 	}
 	else
 	{
@@ -52,7 +58,7 @@ int main(int argc, char** argv)
 	std::vector<cv::String> fn;
 	/*Есть идея замутить константу со всеми форматами, которые буду искать.
 	Пока не трачу время. Тем более тогда надо будет запускать цикл по всем этим форматам,
-	делать для каждого отдельные векторы и потом их слить*/
+	делать для каждого отдельные векторы и потом их слить. Короче отдельная функция*/
 	try
 	{
 		cv::glob(inpath + "/*.jpg", fn, false);
