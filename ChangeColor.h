@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -9,14 +9,10 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
-//Наверно лучше constexpr char DEFAULT_INPATH[]
 const std::string DEFAULT_INPATH = "../images";
 
-/*Выглядит как по мне хуево, т.к. не constexpr и юзает динамическую память.
-Но альтернатив не вижу. Мб из хедера тогда их вытащить в другое место?*/
 const cv::Scalar GREEN_LOWER(30, 40, 40);
 const cv::Scalar GREEN_UPPER(80, 255, 255);
-
 
 enum class itvcvError
 {
@@ -37,6 +33,7 @@ class ChangeColor : public IChangeColorEngine
 {
 public:
     void FeedFrame(unsigned char* packedRGBData, size_t width, size_t height, size_t strideInBytes, itvcvError* error) override;
-    //Через new ничего не выделяется, поэтому пустой
+    /*Через new ничего не выделяется и нечего уничтожать вручную, поэтому пустой.
+    В динамической памяти только объекты cv::Mat*/
     ~ChangeColor() {};
 };
