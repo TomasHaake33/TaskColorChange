@@ -1,4 +1,4 @@
-﻿#include "ChangeColor.h"
+#include "ChangeColor.h"
 
 void ChangeColor::FeedFrame(unsigned char* packedRGBData, size_t width, size_t height, size_t strideInBytes, itvcvError* error)
 {
@@ -28,31 +28,26 @@ void ChangeColor::FeedFrame(unsigned char* packedRGBData, size_t width, size_t h
     auto img = cv::Mat(height, width, CV_8UC3, (void*)packedRGBData, strideInBytes).clone();
     cv::cvtColor(img, img, cv::COLOR_RGB2HSV);
 
+    //Маска, соответствующая зеленому цвету
     cv::Mat mask;
     cv::inRange(img, GREEN_LOWER, GREEN_UPPER, mask);
 
-    for (size_t i = 0; i < height; ++i)
-    {
-        for (size_t j = 0; j < width; ++j)
-        {
-            if (mask.data[i * width + j] != 0)
-            {
-                img.data[(i * width + j) * 3] = 0;
-            }
-        }
-    }
-
+    /*Если маска ненулевая на данном hsv пикселе, меняю его цвет на красный H(0, x, y)
+    Создаю из него матрицу, чтобы конвертировать один пиксель в RGB по формуле из opencv.
+    Копирую этот RGB пиксель в соответствующее место packedGRBData*/
     const auto padding = strideInBytes / 3 - width;
-    cv::cvtColor(img, img, cv::COLOR_HSV2RGB);
-    //Опять такой же цикл. Выглядит не очень, но альтернатив улучшающих нет кмк
     for (size_t i = 0; i < height; ++i)
     {
         for (size_t j = 0; j < width; ++j)
         {
             if (mask.data[i * width + j] != 0)
             {
-                std::memcpy(&packedRGBData[(i * (padding + width) + j) * 3], 
-                    &img.data[(i * width + j) * 3], 3);
+                auto& hsvPixelScalar = img.at<cv::Vec3b>(i, j);
+                hsvPixelScalar[0] = 0;
+                cv::Mat hsvPixelMat(1, 1, CV_8UC3, hsvPixelScalar);
+                cv::cvtColor(hsvPixelMat, hsvPixelMat, cv::COLOR_HSV2RGB);
+                std::memcpy(&packedRGBData[(i * (padding + width) + j) * 3],
+                    &hsvPixelMat.data[0], 3);
             }
         }
     }
