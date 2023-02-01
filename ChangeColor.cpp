@@ -42,12 +42,11 @@ void ChangeColor::FeedFrame(unsigned char* packedRGBData, size_t width, size_t h
         {
             if (mask.data[i * width + j] != 0)
             {
-                auto& hsvPixelScalar = img.at<cv::Vec3b>(i, j);
-                hsvPixelScalar[0] = 0;
-                cv::Mat hsvPixelMat(1, 1, CV_8UC3, hsvPixelScalar);
-                cv::cvtColor(hsvPixelMat, hsvPixelMat, cv::COLOR_HSV2RGB);
+                cv::Mat hsvPixel(1, 1, CV_8UC3, img.at<cv::Vec3b>(i, j));
+                hsvPixel.data[0] = 0;
+                cv::cvtColor(hsvPixel, hsvPixel, cv::COLOR_HSV2RGB);
                 std::memcpy(&packedRGBData[(i * (padding + width) + j) * 3],
-                    &hsvPixelMat.data[0], 3);
+                    &hsvPixel.data[0], 3);
             }
         }
     }
